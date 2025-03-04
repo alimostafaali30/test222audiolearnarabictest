@@ -13,19 +13,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Voice command setup
     const commands = {
-        'login': () => handleLogin(),
-        'log in': () => handleLogin(),
-        'sign in': () => handleLogin(),
-        'register': () => showRegisterModal(),
-        'sign up': () => showRegisterModal(),
-        'username *': (name) => usernameInput.value = name,
-        'user *': (name) => usernameInput.value = name,
-        'password *': (pass) => passwordInput.value = pass,
-        'pass *': (pass) => passwordInput.value = pass,
-        'cancel': () => hideRegisterModal(),
-        'close': () => hideRegisterModal(),
-        'dark mode': () => window.themeController.currentTheme === 'light' && window.themeController.toggleTheme(),
-        'light mode': () => window.themeController.currentTheme === 'dark' && window.themeController.toggleTheme()
+        en: {
+            'login': () => handleLogin(),
+            'log in': () => handleLogin(),
+            'sign in': () => handleLogin(),
+            'register': () => showRegisterModal(),
+            'sign up': () => showRegisterModal(),
+            'username *': (name) => usernameInput.value = name,
+            'user *': (name) => usernameInput.value = name,
+            'password *': (pass) => passwordInput.value = pass,
+            'pass *': (pass) => passwordInput.value = pass,
+            'cancel': () => hideRegisterModal(),
+            'close': () => hideRegisterModal(),
+            'dark mode': () => window.themeController.currentTheme === 'light' && window.themeController.toggleTheme(),
+            'light mode': () => window.themeController.currentTheme === 'dark' && window.themeController.toggleTheme()
+        },
+        ar: {
+            'تسجيل الدخول': () => handleLogin(),
+            'دخول': () => handleLogin(),
+            'تسجيل': () => showRegisterModal(),
+            'تسجيل جديد': () => showRegisterModal(),
+            'اسم المستخدم *': (name) => usernameInput.value = name,
+            'المستخدم *': (name) => usernameInput.value = name,
+            'كلمة المرور *': (pass) => passwordInput.value = pass,
+            'المرور *': (pass) => passwordInput.value = pass,
+            'إلغاء': () => hideRegisterModal(),
+            'إغلاق': () => hideRegisterModal(),
+            'الوضع الداكن': () => window.themeController.currentTheme === 'light' && window.themeController.toggleTheme(),
+            'الوضع الفاتح': () => window.themeController.currentTheme === 'dark' && window.themeController.toggleTheme()
+        }
     };
 
     // Register commands with voice controller

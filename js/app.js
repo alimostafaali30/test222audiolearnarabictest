@@ -3,7 +3,8 @@ class VoiceController {
     constructor() {
         this.recognition = null;
         this.isListening = false;
-        this.commands = {};
+        this.commands = { en: {}, ar: {} };
+        this.currentLang = 'en';
         this.voiceToggle = document.getElementById('voice-toggle');
         this.voiceFeedback = document.getElementById('voice-feedback');
         this.voiceStatusText = document.getElementById('voice-status-text');
@@ -18,7 +19,7 @@ class VoiceController {
             this.recognition = new webkitSpeechRecognition();
             this.recognition.continuous = false;
             this.recognition.interimResults = false;
-            this.recognition.lang = 'en-US';
+            this.recognition.lang = this.currentLang === 'ar' ? 'ar-SA' : 'en-US';
 
             this.recognition.onstart = () => {
                 this.isListening = true;
@@ -93,20 +94,33 @@ class VoiceController {
     updateVoiceStatus(message) {
         if (this.voiceStatusText) {
             this.voiceStatusText.textContent = message;
+            if (this.voiceFeedback) {
+                this.voiceFeedback.style.display = 'block';
+            }
         }
         console.log('Voice status:', message);
     }
 
     registerCommands(newCommands) {
-        this.commands = { ...this.commands, ...newCommands };
+        // Handle both language commands
+        if (newCommands.en) {
+            this.commands.en = { ...(this.commands.en || {}), ...newCommands.en };
+            this.commands.ar = { ...(this.commands.ar || {}), ...newCommands.ar };
+        } else {
+            // For backward compatibility
+            this.commands = { ...this.commands, ...newCommands };
+        }
         this.updateAvailableCommands();
-        console.log('Registered commands:', this.commands);
+        console.log('Registered commands for current language:', 
+            this.currentLang === 'ar' ? this.commands.ar : this.commands.en);
     }
 
     updateAvailableCommands() {
         if (this.availableCommands) {
             this.availableCommands.innerHTML = '';
-            Object.keys(this.commands).forEach(command => {
+            const currentCommands = this.currentLang === 'ar' ? 
+                this.commands.ar : this.commands.en;
+            Object.keys(currentCommands).forEach(command => {
                 const li = document.createElement('li');
                 li.textContent = command;
                 this.availableCommands.appendChild(li);
@@ -121,29 +135,56 @@ class VoiceController {
         const cleanCommand = command.trim().toLowerCase().replace(/[.,!?]/g, '');
         console.log('Cleaned command:', cleanCommand);
 
+        // Get commands for current language
+        const currentCommands = this.currentLang === 'ar' ? 
+            this.commands.ar : this.commands.en;
+        console.log('Available commands:', currentCommands);
+
         // Check for exact matches first
-        if (this.commands[cleanCommand]) {
+        if (currentCommands && currentCommands[cleanCommand]) {
             console.log('Executing command:', cleanCommand);
-            this.commands[cleanCommand]();
+            currentCommands[cleanCommand]();
             return;
         }
 
         // Check for wildcard commands
-        for (let pattern in this.commands) {
-            if (pattern.includes('*')) {
-                // Clean the pattern as well
-                const cleanPattern = pattern.trim().toLowerCase();
-                const regex = new RegExp('^' + cleanPattern.replace('*', '(.+)') + '$');
-                const match = cleanCommand.match(regex);
-                if (match) {
-                    console.log('Executing wildcard command:', pattern, 'with value:', match[1]);
-                    this.commands[pattern](match[1]);
-                    return;
+        if (currentCommands) {
+            for (let pattern in currentCommands) {
+                if (pattern.includes('*')) {
+                    const cleanPattern = pattern.trim().toLowerCase();
+                    const regex = new RegExp('^' + cleanPattern.replace('*', '(.+)') + '$');
+                    const match = cleanCommand.match(regex);
+                    if (match) {
+                        console.log('Executing wildcard command:', pattern, 'with value:', match[1]);
+                        currentCommands[pattern](match[1]);
+                        return;
+                    }
                 }
             }
         }
 
-        this.updateVoiceStatus('Command not recognized: ' + cleanCommand);
+        this.updateVoiceStatus(
+            window.langController ? 
+                window.langController.getText('commandNotRecognized') + ' ' + cleanCommand :
+                'Command not recognized: ' + cleanCommand
+        );
+    }
+
+    setLanguage(lang) {
+        this.currentLang = lang;
+        if (this.recognition) {
+            // Stop current recognition if it's running
+            if (this.isListening) {
+                this.stopListening();
+            }
+            this.recognition.lang = lang === 'ar' ? 'ar-SA' : 'en-US';
+            // Restart if it was listening
+            if (this.isListening) {
+                this.startListening();
+            }
+        }
+        this.updateAvailableCommands();
+        console.log('Voice recognition language set to:', this.recognition.lang);
     }
 }
 
@@ -215,9 +256,110 @@ class ThemeController {
     }
 }
 
-// Initialize theme controller
+// Add this after the ThemeController class
+class LanguageController {
+    constructor() {
+        this.langToggle = document.getElementById('lang-toggle');
+        this.currentLang = localStorage.getItem('lang') || 'en';
+        this.translations = {
+            en: {
+                welcome: 'Welcome Back',
+                subtitle: 'Please login to continue',
+                username: 'Username',
+                password: 'Password',
+                login: 'Login',
+                register: 'Register',
+                createAccount: 'Create Account',
+                seatNumber: 'Seat Number',
+                confirmPassword: 'Confirm Password',
+                role: 'Role',
+                student: 'Student',
+                teacher: 'Teacher',
+                cancel: 'Cancel',
+                platformName: 'Voice Learning Platform',
+                listening: 'Listening...',
+                voiceCommandsPaused: 'Voice commands paused',
+                availableCommands: 'Available commands:',
+                commandNotRecognized: 'Command not recognized:'
+            },
+            ar: {
+                welcome: 'مرحباً بعودتك',
+                subtitle: 'الرجاء تسجيل الدخول للمتابعة',
+                username: 'اسم المستخدم',
+                password: 'كلمة المرور',
+                login: 'تسجيل الدخول',
+                register: 'تسجيل',
+                createAccount: 'إنشاء حساب',
+                seatNumber: 'رقم المقعد',
+                confirmPassword: 'تأكيد كلمة المرور',
+                role: 'الدور',
+                student: 'طالب',
+                teacher: 'معلم',
+                cancel: 'إلغاء',
+                platformName: 'منصة التعلم الصوتي',
+                listening: 'جاري الاستماع...',
+                voiceCommandsPaused: 'تم إيقاف الأوامر الصوتية',
+                availableCommands: 'الأوامر المتاحة:',
+                commandNotRecognized: 'لم يتم التعرف على الأمر:'
+            }
+        };
+        
+        this.init();
+        this.setupEventListeners();
+    }
+
+    init() {
+        document.documentElement.setAttribute('lang', this.currentLang);
+        document.documentElement.setAttribute('dir', this.currentLang === 'ar' ? 'rtl' : 'ltr');
+        this.updateTexts();
+    }
+
+    setupEventListeners() {
+        this.langToggle.addEventListener('click', () => this.toggleLanguage());
+    }
+
+    toggleLanguage() {
+        this.currentLang = this.currentLang === 'en' ? 'ar' : 'en';
+        localStorage.setItem('lang', this.currentLang);
+        document.documentElement.setAttribute('lang', this.currentLang);
+        document.documentElement.setAttribute('dir', this.currentLang === 'ar' ? 'rtl' : 'ltr');
+        if (window.voiceController) {
+            window.voiceController.setLanguage(this.currentLang);
+        }
+        this.updateTexts();
+    }
+
+    updateTexts() {
+        const texts = this.translations[this.currentLang];
+        
+        // Update all text elements
+        document.querySelectorAll('[data-translate]').forEach(element => {
+            const key = element.getAttribute('data-translate');
+            if (texts[key]) {
+                if (element.tagName === 'INPUT' || element.tagName === 'SELECT') {
+                    element.placeholder = texts[key];
+                } else {
+                    element.textContent = texts[key];
+                }
+            }
+        });
+
+        // Update document title
+        document.title = texts.platformName;
+        
+        // Update nav brand
+        document.querySelector('.nav-brand').textContent = texts.platformName;
+    }
+
+    getText(key) {
+        return this.translations[this.currentLang][key];
+    }
+}
+
+// Initialize controllers
 document.addEventListener('DOMContentLoaded', () => {
     window.themeController = new ThemeController();
+    window.langController = new LanguageController();
     window.voiceController = new VoiceController();
     
     // Register page-specific commands if they exist

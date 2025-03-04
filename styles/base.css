@@ -329,4 +329,44 @@ select {
 
 [data-theme="dark"] .icon-btn:hover {
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* RTL Support */
+[dir="rtl"] {
+    /* Text alignment */
+    text-align: right;
+}
+
+[dir="rtl"] .form-group {
+    text-align: right;
+}
+
+[dir="rtl"] .nav-brand {
+    margin-right: 0;
+    margin-left: 1rem;
+}
+
+[dir="rtl"] .nav-controls {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .button-group {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .form-group input,
+[dir="rtl"] .form-group select {
+    text-align: right;
+}
+
+[dir="rtl"] select {
+    background-position: left 1rem center;
+    padding-right: 1rem;
+    padding-left: 2.5rem;
+}
+
+[dir="rtl"] .voice-feedback {
+    right: auto;
+    left: 20px;
+    text-align: right;
 } 
