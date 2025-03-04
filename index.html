@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Learning Platform</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .voice-control-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .voice-control-btn.listening {
+            background-color: #dc3545;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-brand">Voice Learning Platform</div>
+        <div class="nav-controls">
+            <button id="lang-toggle" class="icon-btn" aria-label="Toggle Language">
+                <i class="fas fa-language"></i>
+            </button>
+            <button id="theme-toggle" class="icon-btn" aria-label="Toggle Theme">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button id="voice-toggle" class="icon-btn" aria-label="Toggle Voice Commands">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <div id="nav-buttons">
+                <!-- Dynamic nav buttons will be inserted here -->
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-container">
+        <!-- Login View -->
+        <div id="login-view" class="view">
+            <div class="login-screen card">
+                <h1 data-translate="welcome">Welcome Back</h1>
+                <p class="subtitle" data-translate="subtitle">Please login to continue</p>
+
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="username" data-translate="username">Username</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" id="login-btn" class="primary-btn">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                        <button type="button" id="register-btn" class="secondary-btn">
+                            <i class="fas fa-user-plus"></i> Register
+                        </button>
+                    </div>
+                </form>
+
+                <div class="voice-hint">
+                    <i class="fas fa-microphone"></i>
+                    <p>Try saying "login" or "register"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teacher Dashboard View -->
+        <div id="teacher-view" class="view" style="display: none;">
+            <div id="teacher-dashboard" class="dashboard">
+                <div class="dashboard-header">
+                    <h2>Teacher Dashboard</h2>
+                    <div class="dashboard-actions">
+                        <button id="add-subject-btn" class="action-btn">
+                            <i class="fas fa-plus"></i> New Subject
+                        </button>
+                        <button id="add-questions-btn" class="action-btn">
+                            <i class="fas fa-question"></i> Add Questions
+                        </button>
+                        <button id="view-scores-btn" class="action-btn">
+                            <i class="fas fa-chart-bar"></i> View Scores
+                        </button>
+                    </div>
+                </div>
+                <div id="subjects-list" class="subjects-grid"></div>
+                <div id="scores-view" class="scores-container" style="display: none;"></div>
+            </div>
+
+            <!-- Add Questions Modal -->
+            <div id="add-questions-modal" class="modal" style="display: none;">
+                <!-- Modal content from teacher-dashboard.html -->
+            </div>
+        </div>
+
+        <!-- Student Dashboard View -->
+        <div id="student-view" class="view" style="display: none;">
+            <div id="student-dashboard" class="dashboard">
+                <div class="dashboard-header">
+                    <h2>Available Tests</h2>
+                </div>
+                <div id="available-tests" class="tests-grid">
+                    <!-- Tests will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Test View -->
+        <div id="test-view" class="view" style="display: none;">
+            <div id="test-container" class="test-area">
+                <div class="test-header">
+                    <h3 id="subject-name"></h3>
+                    <div id="progress-indicator"></div>
+                </div>
+                <div class="question-card">
+                    <p id="question-text" class="question-text"></p>
+                    <div id="test-options-container" class="options-grid"></div>
+                </div>
+                <div class="test-controls">
+                    <button id="repeat-question" class="control-btn">
+                        <i class="fas fa-redo"></i> Repeat Question
+                    </button>
+                    <button id="voice-answer" class="control-btn">
+                        <i class="fas fa-microphone"></i> Answer by Voice
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game View -->
+        <div id="game-view" class="view" style="display: none;">
+            <div id="game-container" class="game-area">
+                <div class="game-header">
+                    <h2 id="level-info">Level 1</h2>
+                </div>
+                <div id="question-container" class="question-area"></div>
+                <div id="game-options-container" class="options-area"></div>
+                <div class="game-controls">
+                    <button id="play-question" class="control-btn">
+                        <i class="fas fa-play"></i> Play Question
+                    </button>
+                    <button id="play-options" class="control-btn">
+                        <i class="fas fa-list"></i> Play Options
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add this after the login-view div -->
+        <div id="register-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h2>Create Account</h2>
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="reg-username">Username</label>
+                        <input type="text" id="reg-username" name="username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-seat">Seat Number</label>
+                        <input type="text" id="reg-seat" name="seat" 
+                               pattern="[0-9]{1,4}" 
+                               title="Please enter a valid seat number (1-4 digits)"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" name="password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-confirm-password">Confirm Password</label>
+                        <input type="password" id="reg-confirm-password" name="confirmPassword" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-role">Role</label>
+                        <select id="reg-role" name="role" required>
+                            <option value="student">Student</option>
+                            <option value="teacher">Teacher</option>
+                        </select>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="primary-btn">
+                            <i class="fas fa-user-plus"></i> Register
+                        </button>
+                        <button type="button" class="secondary-btn" id="cancel-register">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <div id="voice-feedback" class="voice-feedback feedback-panel">
+        <div class="voice-status status-indicator">
+            <i class="fas fa-microphone"></i>
+            <span id="voice-status-text" data-translate="listening">Listening...</span>
+        </div>
+        <div class="voice-commands command-list">
+            <p data-translate="availableCommands">Available commands:</p>
+            <ul id="available-commands"></ul>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/login.js"></script>
+    <script src="js/teacher-dashboard.js"></script>
+    <script src="js/student-dashboard.js"></script>
+    <script src="js/test.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html> 

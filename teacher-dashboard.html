@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - Voice Learning Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-brand">Voice Learning Platform</div>
+        <div class="nav-controls">
+            <button id="voice-toggle" class="icon-btn" aria-label="Toggle Voice Commands">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <button id="logout-btn" class="icon-btn">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-container">
+        <div id="teacher-dashboard" class="dashboard">
+            <div class="dashboard-header">
+                <h2>Teacher Dashboard</h2>
+                <div class="dashboard-actions">
+                    <button id="add-subject-btn" class="action-btn" aria-label="Add new subject">
+                        <i class="fas fa-plus"></i> New Subject
+                    </button>
+                    <button id="add-questions-btn" class="action-btn" aria-label="Add new questions">
+                        <i class="fas fa-question"></i> Add Questions
+                    </button>
+                    <button id="view-scores-btn" class="action-btn" aria-label="View student scores">
+                        <i class="fas fa-chart-bar"></i> View Scores
+                    </button>
+                </div>
+            </div>
+            <div id="subjects-list" class="subjects-grid"></div>
+            <div id="scores-view" class="scores-container" style="display: none;">
+                <h3>Student Performance</h3>
+                <div id="scores-container"></div>
+            </div>
+        </div>
+
+        <div id="add-questions-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h2>Add Questions</h2>
+                <form id="question-form">
+                    <select id="subject-select" required>
+                        <!-- Subjects will be populated dynamically -->
+                    </select>
+                    
+                    <div id="question-inputs">
+                        <div class="question-input">
+                            <input type="text" placeholder="Question text" required>
+                            <input type="text" placeholder="Option 1" required>
+                            <input type="text" placeholder="Option 2" required>
+                            <input type="text" placeholder="Option 3" required>
+                            <input type="text" placeholder="Option 4" required>
+                            <select class="correct-answer" required>
+                                <option value="">Select correct answer</option>
+                                <option value="0">Option 1</option>
+                                <option value="1">Option 2</option>
+                                <option value="2">Option 3</option>
+                                <option value="3">Option 4</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button type="button" id="add-more-btn">Add Another Question</button>
+                    <button type="submit">Save Questions</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <div id="voice-feedback" class="voice-feedback feedback-panel">
+        <div class="voice-status status-indicator">
+            <i class="fas fa-microphone"></i>
+            <span id="voice-status-text">Listening...</span>
+        </div>
+        <div class="voice-commands command-list">
+            <p>Available commands:</p>
+            <ul id="available-commands" aria-label="List of available voice commands"></ul>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/teacher-dashboard.js"></script>
+</body>
+</html> 

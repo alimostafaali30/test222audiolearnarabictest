@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game - Voice Learning Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-brand">Voice Learning Platform</div>
+        <div class="nav-controls">
+            <button id="voice-toggle" class="icon-btn" aria-label="Toggle Voice Commands">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <button id="back-btn" class="icon-btn" aria-label="Back to dashboard">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-container">
+        <div id="game-container" class="game-area">
+            <div class="game-header">
+                <h2 id="level-info">Level 1</h2>
+            </div>
+            <div id="question-container" class="question-area">
+                <!-- Question will be inserted here -->
+            </div>
+            <div id="game-options-container" class="options-area">
+                <!-- Options will be inserted here -->
+            </div>
+            <div class="game-controls">
+                <button id="play-question" class="control-btn" aria-label="Play question audio">
+                    <i class="fas fa-play"></i> Play Question
+                </button>
+                <button id="play-options" class="control-btn" aria-label="Play options audio">
+                    <i class="fas fa-list"></i> Play Options
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <div id="voice-feedback" class="voice-feedback feedback-panel">
+        <div class="voice-status status-indicator">
+            <i class="fas fa-microphone"></i>
+            <span id="voice-status-text">Listening...</span>
+        </div>
+        <div class="voice-commands command-list">
+            <p>Available commands:</p>
+            <ul id="available-commands" aria-label="List of available voice commands"></ul>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html> 
